@@ -39,6 +39,9 @@ all = ["fastmcp"]
 
 [tool.poetry.scripts]
 mcp-reflect = "mcp_reflect.server:run_server"
+lint = "mcp_reflect.cli:lint"
+format-code = "mcp_reflect.cli:format_code"
+mypy = "mcp_reflect.cli:type_check"
 
 [build-system]
 requires = ["poetry-core"]
