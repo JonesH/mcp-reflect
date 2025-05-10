@@ -1,5 +1,4 @@
-"""
-Core evaluation logic for the MCP-reflect tool.
+"""Core evaluation logic for the MCP-reflect tool.
 
 This module contains the functions responsible for analyzing model responses
 and generating improved versions with detailed feedback.
@@ -28,62 +27,66 @@ class EvaluationPrompt(BaseModel):
 
 
 def _build_evaluation_prompt(input_data: ReflectionInput) -> str:
-    """
-    Build the full evaluation prompt from the input data.
+    """Build the full evaluation prompt from the input data.
 
     Args:
+    ----
         input_data: The reflection input data
 
     Returns:
+    -------
         Complete prompt string for the evaluator
+
     """
     prompt = "Evaluate and improve the following model response:\n\n"
-    
+
     if input_data.query:
         prompt += f"ORIGINAL QUERY:\n{input_data.query}\n\n"
-    
+
     prompt += f"RESPONSE TO EVALUATE:\n{input_data.response}\n\n"
-    
+
     prompt += "Provide a comprehensive evaluation along these dimensions:\n"
-    
+
     dimensions = input_data.focus_dimensions or list(EvaluationDimension)
     for dim in dimensions:
         prompt += f"- {dim.value.capitalize()}\n"
-    
+
     prompt += "\nFor each dimension, provide:\n"
     prompt += "1. A score from 1-10\n"
     prompt += "2. Brief reasoning for the score\n"
     prompt += "3. Specific suggestions for improvement\n\n"
-    
+
     prompt += "Then create an improved version of the response."
-    
+
     if input_data.improvement_prompt:
         prompt += f"\n\nAdditional improvement instructions: {input_data.improvement_prompt}"
-    
+
     return prompt
 
 
 async def _parse_evaluation_response(raw_evaluation: str) -> ReflectionResult:
-    """
-    Parse the raw evaluation response into a structured format.
+    """Parse the raw evaluation response into a structured format.
 
     Args:
+    ----
         raw_evaluation: The raw string response from the evaluator
 
     Returns:
+    -------
         Structured reflection result
+
     """
     # This is a simplified parsing implementation
     # In a real implementation, you would use more robust parsing
-    
+
     sections = raw_evaluation.split("IMPROVED RESPONSE:")
-    
+
     if len(sections) < 2:
         raise ValueError("Could not parse evaluation response")
-    
+
     evaluation_text = sections[0].strip()
     improved_response = sections[1].strip()
-    
+
     # Extract dimension scores
     scores = []
     for dim in EvaluationDimension:
@@ -91,15 +94,15 @@ async def _parse_evaluation_response(raw_evaluation: str) -> ReflectionResult:
             dim_section = evaluation_text.split(dim.value.upper())[1].split("\n\n")[0]
             score_text = dim_section.split("Score:")[1].split("/10")[0].strip()
             score = float(score_text)
-            
+
             reasoning = "See evaluation"
             if "Reasoning:" in dim_section:
                 reasoning = dim_section.split("Reasoning:")[1].split("Improvement:")[0].strip()
-            
+
             improvement = "See overall improvements"
             if "Improvement:" in dim_section:
                 improvement = dim_section.split("Improvement:")[1].strip()
-            
+
             scores.append(
                 DimensionScore(
                     dimension=dim,
@@ -108,12 +111,12 @@ async def _parse_evaluation_response(raw_evaluation: str) -> ReflectionResult:
                     improvement_suggestion=improvement,
                 )
             )
-    
+
     # Extract overall assessment
     overall_assessment = "See evaluation details"
     if "OVERALL ASSESSMENT:" in evaluation_text:
         overall_assessment = evaluation_text.split("OVERALL ASSESSMENT:")[1].strip()
-    
+
     return ReflectionResult(
         original_response=raw_evaluation,
         improved_response=improved_response,
@@ -123,8 +126,7 @@ async def _parse_evaluation_response(raw_evaluation: str) -> ReflectionResult:
 
 
 async def evaluate_response(input_data: ReflectionInput) -> ReflectionResult:
-    """
-    Evaluate a model response and provide improvement suggestions.
+    """Evaluate a model response and provide improvement suggestions.
 
     This is a placeholder implementation. In a real-world scenario, you would:
     1. Send the evaluation prompt to an LLM
@@ -132,19 +134,22 @@ async def evaluate_response(input_data: ReflectionInput) -> ReflectionResult:
     3. Return the structured result
 
     Args:
+    ----
         input_data: The reflection input data
 
     Returns:
+    -------
         Complete reflection result with scores and improved response
+
     """
     # Placeholder for API call to another model
     # In reality, you would use an API client here
-    
-    prompt = _build_evaluation_prompt(input_data)
-    
+
+    _build_evaluation_prompt(input_data)
+
     # Simulate API call delay
     await asyncio.sleep(0.1)
-    
+
     # Placeholder response
     raw_evaluation = (
         "EVALUATION:\n\n"
@@ -164,5 +169,5 @@ async def evaluate_response(input_data: ReflectionInput) -> ReflectionResult:
         f"Here is an improved version of the original response:\n\n{input_data.response}\n\n"
         "With improvements for clarity, accuracy, and completeness as identified in the evaluation."
     )
-    
+
     return await _parse_evaluation_response(raw_evaluation)

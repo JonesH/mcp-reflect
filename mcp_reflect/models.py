@@ -1,12 +1,12 @@
-"""
-Data models for mcp-reflect.
+"""Data models for mcp-reflect.
 
 This module contains the Pydantic models used for input and output validation
 in the MCP-reflect tool.
 """
 
-from enum import Enum
 from collections.abc import Sequence
+from enum import Enum
+
 from pydantic import BaseModel, Field
 
 
@@ -46,12 +46,8 @@ class ReflectionResult(BaseModel):
 class ReflectionInput(BaseModel):
     """Input for the reflection tool."""
 
-    response: str = Field(
-        description="The original model response to reflect upon and improve"
-    )
-    query: str | None = Field(
-        None, description="The original query that prompted the response"
-    )
+    response: str = Field(description="The original model response to reflect upon and improve")
+    query: str | None = Field(None, description="The original query that prompted the response")
     focus_dimensions: Sequence[EvaluationDimension] | None = Field(
         None,
         description="Specific dimensions to focus on during evaluation",

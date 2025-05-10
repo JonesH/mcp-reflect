@@ -52,3 +52,4 @@ env/
 
 # Environments
 .python-version
+.aider*
