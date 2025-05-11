@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mcp-reflect:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-reflect:latest
+    container_name: mcp-reflect
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      # Add other environment variables as needed
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data  # Optional: for persistent storage if needed
+
+  # You can add additional services here if needed
+  # For example, a database if you want to store reflection history:
+  # 
+  # db:
+  #   image: postgres:14
+  #   environment:
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_USER=mcp
+  #     - POSTGRES_DB=reflections
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data:
