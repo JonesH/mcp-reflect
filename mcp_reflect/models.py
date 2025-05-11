@@ -54,7 +54,8 @@ class ReflectionInput(BaseModel):
     improvement_prompt: str | None = None
 
     @field_validator("focus_dimensions", mode="before")
-    def set_focus_dimensions(cls, v):
+    def set_focus_dimensions(cls, v: Sequence[EvaluationDimension] | None) -> Sequence[EvaluationDimension] | None:  # noqa: N805
+        """Convert empty list to None for focus_dimensions."""
         if v is None or v == []:
             return None
         return v
