@@ -50,47 +50,47 @@ jobs:
              {"type":"refactor","section":"Code Refactoring","hidden":false},
              {"type":"test","section":"Tests","hidden":false}]
 
-      publish:
-        needs: release-please
-        if: ${{ needs.release-please.outputs.release_created }}
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v4
-            with:
-              # Wichtig: Vollständigen History-Checkout für Release Please Changelog-Generierung
-              fetch-depth: 0
-      
-          - name: Set up Python 3.13
-            uses: actions/setup-python@v4
-            with:
-              python-version: '3.13'
-      
-          - name: Install Poetry
-            uses: snok/install-poetry@v1
-            with:
-              version: 1.7.1
-              virtualenvs-create: true
-              virtualenvs-in-project: true
-      
-          - name: Install dependencies
-            run: poetry install --no-interaction
-      
-          - name: Run tests
-            run: poetry run pytest
-      
-          - name: Build package
-            run: poetry build
-      
-          - name: Check distribution
-            run: |
-              pip install twine
-              twine check dist/*
-      
-          - name: Publish to PyPI
-            uses: pypa/gh-action-pypi-publish@release/v1
-            # No credentials needed with Trusted Publishing
-      
-          - name: Log release details
-            run: |
-              echo "Released mcp-reflect v${{ needs.release-please.outputs.version }} to PyPI"
-              echo "GitHub Release: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.release-please.outputs.version }}"
+  publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Wichtig: Vollständigen History-Checkout für Release Please Changelog-Generierung
+          fetch-depth: 0
+  
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+  
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+  
+      - name: Install dependencies
+        run: poetry install --no-interaction
+  
+      - name: Run tests
+        run: poetry run pytest
+  
+      - name: Build package
+        run: poetry build
+  
+      - name: Check distribution
+        run: |
+          pip install twine
+          twine check dist/*
+  
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # No credentials needed with Trusted Publishing
+  
+      - name: Log release details
+        run: |
+          echo "Released mcp-reflect v${{ needs.release-please.outputs.version }} to PyPI"
+          echo "GitHub Release: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.release-please.outputs.version }}"
