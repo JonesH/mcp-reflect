@@ -23,14 +23,10 @@ mcp: FastMCP = FastMCP(
 
 @mcp.tool()
 async def reflect(
-    response: str = Field(..., description="The original model response to reflect upon and improve"),
-    query: str | None = Field(None, description="The original query that prompted the response"),
-    focus_dimensions: Sequence[EvaluationDimension] | None = Field(
-        None, description="Specific dimensions to focus on during evaluation"
-    ),
-    improvement_prompt: str | None = Field(
-        None, description="Additional context or specific instructions for improvement"
-    ),
+    response: Annotated[str, Field(..., description="The original model response to reflect upon and improve")],
+    query: Annotated[str | None, Field(None, description="The original query that prompted the response")] = None,
+    focus_dimensions: Annotated[Sequence[EvaluationDimension] | None, Field(None, description="Specific dimensions to focus on during evaluation")] = None,
+    improvement_prompt: Annotated[str | None, Field(None, description="Additional context or specific instructions for improvement")] = None,
 ) -> ReflectionResult:
     """Reflect on and improve a model's response with structured evaluation.
 
@@ -55,11 +51,11 @@ async def reflect(
 
 @mcp.tool()
 async def sequential_reflect(
-    responses: Sequence[str] = Field(..., description="A sequence of model responses to analyze", min_items=1),
+    responses: Annotated[Sequence[str], Field(..., description="A sequence of model responses to analyze", min_items=1)],
     mode: Annotated[
         Literal["independent", "iterative", "comparative"], Field(description="How to process multiple responses")
     ] = "independent",
-    context: Context | None = None,
+    context: Annotated[Context | None, Field(default=None)] = None,
 ) -> Sequence[ReflectionResult]:
     """Process multiple responses sequentially with different reflection strategies.
 
