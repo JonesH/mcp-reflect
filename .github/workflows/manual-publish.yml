@@ -22,6 +22,11 @@ on:
           - minor
           - major
 
+# Required for PyPI trusted publishing
+permissions:
+  id-token: write    # Required for PyPI trusted publishing
+  contents: write    # Required for git tag and push
+
 jobs:
   publish:
     runs-on: ubuntu-latest
