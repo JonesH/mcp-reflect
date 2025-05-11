@@ -107,16 +107,9 @@ async def sequential_reflect(
     return results
 
 
-def run_server(host: str = "0.0.0.0", port: int = 8080) -> None:
-    """Start the MCP server with the defined tools.
-
-    Args:
-    ----
-        host: Host address to bind the server to
-        port: Port number to use
-
-    """
-    mcp.run(host=host, port=port)
+def run_server() -> None:
+    """Start the MCP server with the defined tools."""
+    mcp.run(transport="stdio")
 
 
 if __name__ == "__main__":
