@@ -56,8 +56,8 @@ class ReflectionInput(BaseModel):
     @classmethod
     @field_validator("focus_dimensions", mode="before")
     def set_focus_dimensions(
-        cls, v: Sequence[EvaluationDimension] | None
-    ) -> Sequence[EvaluationDimension] | None:  # noqa: N805
+        cls: type["ReflectionInput"], v: Sequence[EvaluationDimension] | None
+    ) -> Sequence[EvaluationDimension] | None:
         """Convert empty list to None for focus_dimensions."""
         if v is None or v == []:
             return None
