@@ -50,7 +50,6 @@ target-version = ["py311", "py312", "py313"]
 
 [tool.isort]
 profile = "black"
-line_length = 120
 
 [tool.mypy]
 python_version = "3.11"
