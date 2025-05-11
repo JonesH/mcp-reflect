@@ -28,5 +28,5 @@ jobs:
 
       # Optionaler PyPI-Upload via Trusted Publishing
       - name: Upload to PyPI (OIDC)
-        if: ${{ steps.semrel.outputs.released == 'true' }}
+        # if: ${{ steps.semrel.outputs.released == 'true' }}
         uses: pypa/gh-action-pypi-publish@release/v1
