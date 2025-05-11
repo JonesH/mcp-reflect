@@ -47,7 +47,7 @@ async def reflect(
     input_data = ReflectionInput(
         response=response,
         query=query,
-        focus_dimensions=focus_dimensions,
+        focus_dimensions=focus_dimensions or [],
         improvement_prompt=improvement_prompt,
     )
 
