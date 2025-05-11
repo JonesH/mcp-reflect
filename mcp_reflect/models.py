@@ -7,7 +7,7 @@ in the MCP-reflect tool.
 from collections.abc import Sequence
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class EvaluationDimension(str, Enum):
@@ -52,3 +52,9 @@ class ReflectionInput(BaseModel):
         None, description="Specific dimensions to focus on during evaluation"
     )
     improvement_prompt: str | None = None
+
+    @field_validator("focus_dimensions", mode="before")
+    def set_focus_dimensions(cls, v):
+        if v is None or v == []:
+            return None
+        return v
