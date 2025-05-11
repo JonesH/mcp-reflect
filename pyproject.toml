@@ -2,6 +2,13 @@
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.semantic_release]
+branch = "main"
+version_variable = "pyproject.toml:tool.poetry.version"
+build_command    = "python -m pip install poetry && poetry build"
+commit_parser    = "conventional"
+vcs_release      = true
+
 [tool.poetry]
 name = "mcp-reflect"
 version = "0.1.0"
@@ -41,7 +48,6 @@ isort = "^5.13.2"
 
 [tool.poetry.scripts]
 mcp-reflect = "mcp_reflect.server:run_server"
-mcp-reflect-uvx = "mcp_reflect.server:run_uvx_server"
 
 [tool.black]
 line-length = 120

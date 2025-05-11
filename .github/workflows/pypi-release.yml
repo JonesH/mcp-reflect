@@ -1,98 +1,32 @@
-name: PyPI Official Release
+name: release
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to release (e.g., 0.1.0)'
-        required: true
-        type: string
-      confirm:
-        description: 'Type "YES" to confirm publishing to official PyPI'
-        required: true
-        type: string
+  workflow_run:
+    workflows: ["tests"]
+    branches: [main]
+    types: [completed]
 
-# Required for PyPI trusted publishing
 permissions:
-  id-token: write    # Required for PyPI trusted publishing
-  contents: write    # Required for tagging
+  contents: write # Für Release-Erstellung und Tag-Push
+  pull-requests: write # Für PR-Erstellung/-Update
+  id-token: write # Für PyPI Trusted Publishing
 
 jobs:
-  validate:
+  semrel:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    concurrency: release # verhindert parallele Releases
     steps:
-      - name: Validate confirmation
-        if: ${{ github.event.inputs.confirm != 'YES' }}
-        run: |
-          echo "::error::You must type 'YES' to confirm publishing to official PyPI"
-          exit 1
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
 
-  release:
-    runs-on: ubuntu-latest
-    needs: [validate]
-    if: ${{ always() && (github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && needs.validate.result == 'success')) }}
-    
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    
-    - name: Set up Python 3.13
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.13'
-    
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: 1.7.1
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-    
-    - name: Install dependencies
-      run: poetry install --no-interaction
-    
-    - name: Run tests
-      run: poetry run pytest
-      
-    - name: Update version (for manual releases)
-      if: github.event_name == 'workflow_dispatch'
-      run: |
-        poetry version ${{ github.event.inputs.version }}
-        echo "Set version to ${{ github.event.inputs.version }}"
-        
-    - name: Tag version (for manual releases)
-      if: github.event_name == 'workflow_dispatch'
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add pyproject.toml
-        git commit -m "chore(release): release version ${{ github.event.inputs.version }} [skip ci]"
-        git tag -a "v${{ github.event.inputs.version }}" -m "Release ${{ github.event.inputs.version }}"
-        git push origin "v${{ github.event.inputs.version }}"
-    
-    - name: Build package
-      run: poetry build
-      
-    - name: Check distribution
-      run: |
-        pip install twine
-        twine check dist/*
-    
-    - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      # No credentials needed with Trusted Publishing
-      
-    - name: Create GitHub Release (for manual releases)
-      if: github.event_name == 'workflow_dispatch'
-      uses: ncipollo/release-action@v1
-      with:
-        tag: "v${{ github.event.inputs.version }}"
-        name: "Release v${{ github.event.inputs.version }}"
-        body: "Release version ${{ github.event.inputs.version }} of MCP-Reflect"
-        draft: false
-        prerelease: false
+      - name: Version, Tag & GitHub-Release
+        id: semrel
+        uses: python-semantic-release/python-semantic-release@v9
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Optionaler PyPI-Upload via Trusted Publishing
+      - name: Upload to PyPI (OIDC)
+        if: ${{ steps.semrel.outputs.released == 'true' }}
+        uses: pypa/gh-action-pypi-publish@release/v1

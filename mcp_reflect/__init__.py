@@ -4,8 +4,6 @@ This package provides MCP tools for evaluating and improving model responses,
 as well as structured meta-reflection capabilities.
 """
 
-__version__ = "0.1.0"
-
 from mcp_reflect.models import (
     EvaluationDimension,
     Reflection,
