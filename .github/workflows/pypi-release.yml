@@ -34,65 +34,65 @@ jobs:
     runs-on: ubuntu-latest
     needs: [validate]
     if: ${{ always() && (github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && needs.validate.result == 'success')) }}
-
+    
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
+    
     - name: Set up Python 3.13
       uses: actions/setup-python@v4
       with:
         python-version: '3.13'
-
+    
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
         version: 1.7.1
         virtualenvs-create: true
         virtualenvs-in-project: true
-
+    
     - name: Install dependencies
       run: poetry install --no-interaction
-
+    
     - name: Run tests
-          run: poetry run pytest
+      run: poetry run pytest
+      
+    - name: Update version (for manual releases)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        poetry version ${{ github.event.inputs.version }}
+        echo "Set version to ${{ github.event.inputs.version }}"
         
-        - name: Update version (for manual releases)
-          if: github.event_name == 'workflow_dispatch'
-          run: |
-            poetry version ${{ github.event.inputs.version }}
-            echo "Set version to ${{ github.event.inputs.version }}"
-        
-        - name: Tag version (for manual releases)
-          if: github.event_name == 'workflow_dispatch'
-          run: |
-            git config --local user.email "github-actions[bot]@users.noreply.github.com"
-            git config --local user.name "github-actions[bot]"
-            git add pyproject.toml
-            git commit -m "chore(release): release version ${{ github.event.inputs.version }} [skip ci]"
-            git tag -a "v${{ github.event.inputs.version }}" -m "Release ${{ github.event.inputs.version }}"
-            git push origin "v${{ github.event.inputs.version }}"
-        
-        - name: Build package
-          run: poetry build
-        
-        - name: Check distribution
-          run: |
-            pip install twine
-            twine check dist/*
-        
-        - name: Publish to PyPI
-          uses: pypa/gh-action-pypi-publish@release/v1
-          # No credentials needed with Trusted Publishing
-        
-        - name: Create GitHub Release (for manual releases)
-          if: github.event_name == 'workflow_dispatch'
-          uses: ncipollo/release-action@v1
-          with:
-            tag: "v${{ github.event.inputs.version }}"
-            name: "Release v${{ github.event.inputs.version }}"
-            body: "Release version ${{ github.event.inputs.version }} of MCP-Reflect"
-            draft: false
-            prerelease: false
+    - name: Tag version (for manual releases)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add pyproject.toml
+        git commit -m "chore(release): release version ${{ github.event.inputs.version }} [skip ci]"
+        git tag -a "v${{ github.event.inputs.version }}" -m "Release ${{ github.event.inputs.version }}"
+        git push origin "v${{ github.event.inputs.version }}"
+    
+    - name: Build package
+      run: poetry build
+      
+    - name: Check distribution
+      run: |
+        pip install twine
+        twine check dist/*
+    
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      # No credentials needed with Trusted Publishing
+      
+    - name: Create GitHub Release (for manual releases)
+      if: github.event_name == 'workflow_dispatch'
+      uses: ncipollo/release-action@v1
+      with:
+        tag: "v${{ github.event.inputs.version }}"
+        name: "Release v${{ github.event.inputs.version }}"
+        body: "Release version ${{ github.event.inputs.version }} of MCP-Reflect"
+        draft: false
+        prerelease: false
