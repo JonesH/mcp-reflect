@@ -15,6 +15,7 @@ from mcp_reflect.models import (
     ReflectionInput,
     ReflectionResult,
 )
+import re
 
 
 class EvaluationPrompt(BaseModel):
@@ -91,18 +92,18 @@ async def _parse_evaluation_response(raw_evaluation: str) -> ReflectionResult:
     scores = []
     for dim in EvaluationDimension:
         if dim.value.upper() in evaluation_text:
-            dim_section = evaluation_text.split(dim.value.upper())[1].split("\n\n")[0]
-            score_text = dim_section.split("Score:")[1].split("/10")[0].strip()
-            score = float(score_text)
-
-            reasoning = "See evaluation"
+            dim_section = evaluation_text.split(dim.value.upper(), 1)[1].split("\n\n", 1)[0]
+            score_match = re.search(r":\s*(\d+)\s*/\s*10", dim_section)
+            if score_match:
+                score = float(score_match.group(1))
+            else:
+                continue
+            reasoning = ""
             if "Reasoning:" in dim_section:
-                reasoning = dim_section.split("Reasoning:")[1].split("Improvement:")[0].strip()
-
-            improvement = "See overall improvements"
+                reasoning = dim_section.split("Reasoning:", 1)[1].split("\n", 1)[0].strip()
+            improvement = ""
             if "Improvement:" in dim_section:
-                improvement = dim_section.split("Improvement:")[1].strip()
-
+                improvement = dim_section.split("Improvement:", 1)[1].split("\n", 1)[0].strip()
             scores.append(
                 DimensionScore(
                     dimension=dim,
