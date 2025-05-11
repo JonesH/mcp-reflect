@@ -37,8 +37,11 @@ MCP-Reflect evaluates model responses across these key dimensions:
 # Install from PyPI (stable releases)
 pip install mcp-reflect
 
+# Install with all dependencies (including optional)
+pip install "mcp-reflect[core]"
+
 # Install latest development version from TestPyPI
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ mcp-reflect
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ "mcp-reflect[core]"
 ```
 
 ### Using Poetry
