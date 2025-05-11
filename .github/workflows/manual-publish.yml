@@ -1,0 +1,82 @@
+name: Manual Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      destination:
+        description: 'Publish destination'
+        required: true
+        default: 'test-pypi'
+        type: choice
+        options:
+          - test-pypi
+          - pypi
+      version_bump:
+        description: 'Bump version before publishing'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - none
+          - patch
+          - minor
+          - major
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.7.1
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Install dependencies
+      run: poetry install --no-interaction
+    
+    - name: Configure Git (for version bump)
+      if: inputs.version_bump != 'none'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+    
+    - name: Bump version (if requested)
+      if: inputs.version_bump != 'none'
+      run: |
+        poetry version ${{ inputs.version_bump }}
+        NEW_VERSION=$(poetry version -s)
+        echo "New version: $NEW_VERSION"
+        git add pyproject.toml
+        git commit -m "chore(release): bump version to $NEW_VERSION [skip ci]"
+        git tag -a "v$NEW_VERSION" -m "Release $NEW_VERSION"
+        git push
+        git push --tags
+    
+    - name: Build package
+      run: poetry build
+    
+    - name: Publish to PyPI
+      if: inputs.destination == 'pypi'
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+    
+    - name: Publish to Test PyPI
+      if: inputs.destination == 'test-pypi'
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/

@@ -1,0 +1,57 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: python
+          package-name: mcp-reflect
+          bump-minor-pre-major: true
+          bump-patch-for-minor-pre-major: true
+          include-v-in-tag: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      # The logic below handles the PyPI publishing
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+        
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          python-version: '3.13'
+          
+      - name: Install Poetry
+        if: ${{ steps.release.outputs.release_created }}
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          
+      - name: Install dependencies
+        if: ${{ steps.release.outputs.release_created }}
+        run: poetry install --no-interaction
+        
+      - name: Build package
+        if: ${{ steps.release.outputs.release_created }}
+        run: poetry build
+        
+      - name: Publish to PyPI
+        if: ${{ steps.release.outputs.release_created }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
