@@ -13,7 +13,11 @@ class TestMetaReflection:
         # Create a fresh reflection store for testing
         store = ReflectionStore("TestStore")
 
-        result = store.add_reflection(content="Testing the reflection mechanism", stage="problem", rtype="critical")
+        result = store.add_reflection(
+            content="Testing the reflection mechanism",
+            stage="problem",
+            rtype="critical",
+        )
 
         assert result["ok"] is True
         assert "id" in result

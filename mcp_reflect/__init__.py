@@ -6,7 +6,13 @@ as well as structured meta-reflection capabilities.
 
 __version__ = "0.1.0"
 
-from mcp_reflect.models import EvaluationDimension, Reflection, ReflectionResult, RType, Stage
+from mcp_reflect.models import (
+    EvaluationDimension,
+    Reflection,
+    ReflectionResult,
+    RType,
+    Stage,
+)
 from mcp_reflect.server import (
     ReflectionStore,
     mcp,

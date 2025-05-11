@@ -31,14 +31,34 @@ MCP-Reflect evaluates model responses across these key dimensions:
 
 ## 🚀 Installation
 
+### Using pip
+
 ```bash
 pip install mcp-reflect
 ```
 
-Or with Poetry:
+### Using Poetry
 
 ```bash
 poetry add mcp-reflect
+```
+
+### Using UV
+
+UV is a fast Python package installer written in Rust. To install with UV:
+
+```bash
+# Install UV if you haven't already
+curl -sSf https://install.ultraviolet.rs | sh
+
+# Install the package globally as a tool
+uv tool install mcp-reflect
+
+# Or install the package with pip
+uv pip install mcp-reflect
+
+# Run the package without installing
+uvx mcp-reflect
 ```
 
 ## 💡 Usage
@@ -59,6 +79,41 @@ from mcp_reflect.server import run_server
 # Start on a custom host and port
 run_server(host="127.0.0.1", port=9000)
 ```
+
+### Running with HTTP Server
+
+MCP-Reflect can provide an HTTP server for API access:
+
+```bash
+# Install with HTTP server support
+pip install "mcp-reflect[all]"
+
+# Install with UV (with HTTP server support)
+uv tool install "mcp-reflect[all]"
+
+# Run the HTTP server
+mcp-reflect-uvx
+```
+
+You can customize the host and port using environment variables:
+
+```bash
+# Set custom host and port
+export HOST=127.0.0.1
+export PORT=8080
+mcp-reflect-uvx
+```
+
+Or run it programmatically:
+
+```python
+from mcp_reflect.server import run_uvx_server
+
+# This will start an HTTP server on the specified host and port
+run_uvx_server()
+```
+
+Once running, the server provides the MCP tools via HTTP endpoints that can be accessed by API clients.
 
 ### Basic Reflection
 

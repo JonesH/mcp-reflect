@@ -65,7 +65,10 @@ class TestReflectTool:
         result = await reflect(
             response="Test response",
             query="Test query",
-            focus_dimensions=[EvaluationDimension.ACCURACY, EvaluationDimension.CLARITY],
+            focus_dimensions=[
+                EvaluationDimension.ACCURACY,
+                EvaluationDimension.CLARITY,
+            ],
             improvement_prompt="Make it better",
         )
 

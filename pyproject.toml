@@ -1,8 +1,12 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "mcp-reflect"
 version = "0.1.0"
-description = "MCP tool for model self-reflection and response improvement"
-authors = ["Jona M. J. Heidsick <jona.heidsick@gmail.com>"]
+description = "A framework for model self-reflection and meta-cognitive processing"
+authors = ["Jona Heidsick <jona.heidsick@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/JonesH/mcp-reflect"
@@ -24,6 +28,7 @@ python = ">=3.11,<3.14"
 fastmcp = ">=0.3.0"
 pydantic = ">=2.0.0"
 async-lru = "^2.0.4"
+uvicorn = {version = ">=0.23.0", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
@@ -35,14 +40,11 @@ black = "^24.1.0"
 isort = "^5.13.2"
 
 [tool.poetry.extras]
-all = ["fastmcp"]
+all = ["uvicorn"]
 
 [tool.poetry.scripts]
 mcp-reflect = "mcp_reflect.server:run_server"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+mcp-reflect-uvx = "mcp_reflect.server:run_uvx_server"
 
 [tool.black]
 line-length = 120
@@ -52,7 +54,7 @@ target-version = ["py311", "py312", "py313"]
 profile = "black"
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -63,10 +65,10 @@ no_implicit_optional = true
 strict_optional = true
 
 [tool.ruff]
+line-length = 120
+target-version = "py311"
 lint.select = ["E", "F", "B", "I", "N", "ANN", "W", "D", "UP", "C90"]
 lint.ignore = ["D203", "D213"]
-line-length = 120
-target-version = "py313"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "ANN"]

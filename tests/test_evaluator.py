@@ -44,7 +44,10 @@ class TestEvaluationPromptBuilder:
         """Verify prompt includes only specified dimensions when provided."""
         input_data = ReflectionInput(
             response="This is a test response",
-            focus_dimensions=[EvaluationDimension.ACCURACY, EvaluationDimension.CLARITY],
+            focus_dimensions=[
+                EvaluationDimension.ACCURACY,
+                EvaluationDimension.CLARITY,
+            ],
         )
         prompt = _build_evaluation_prompt(input_data)
 
@@ -55,7 +58,8 @@ class TestEvaluationPromptBuilder:
     def test_prompt_with_improvement_instructions(self) -> None:
         """Verify prompt includes improvement instructions when provided."""
         input_data = ReflectionInput(
-            response="This is a test response", improvement_prompt="Focus on making it more concise"
+            response="This is a test response",
+            improvement_prompt="Focus on making it more concise",
         )
         prompt = _build_evaluation_prompt(input_data)
 
