@@ -14,7 +14,7 @@ from mcp_reflect.evaluator import evaluate_response
 from mcp_reflect.models import EvaluationDimension, ReflectionInput, ReflectionResult
 
 # Create the MCP server
-mcp = FastMCP(
+mcp: FastMCP = FastMCP(
     "Model Self-Reflection Tools",
     description="Tools for improving model self-reflection capabilities",
     dependencies=["fastmcp", "pydantic>=2.0.0", "async-lru"],
@@ -23,7 +23,7 @@ mcp = FastMCP(
 
 @mcp.tool()
 async def reflect(
-    response: str = Field(description="The original model response to reflect upon and improve"),
+    response: str = Field(..., description="The original model response to reflect upon and improve"),
     query: str | None = Field(None, description="The original query that prompted the response"),
     focus_dimensions: Sequence[EvaluationDimension] | None = Field(
         None, description="Specific dimensions to focus on during evaluation"
@@ -55,10 +55,7 @@ async def reflect(
 
 @mcp.tool()
 async def sequential_reflect(
-    responses: Sequence[str] = Field(
-        description="A sequence of model responses to analyze",
-        min_items=1,
-    ),
+    responses: Sequence[str] = Field(..., description="A sequence of model responses to analyze", min_items=1),
     mode: Annotated[
         Literal["independent", "iterative", "comparative"], Field(description="How to process multiple responses")
     ] = "independent",
