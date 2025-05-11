@@ -46,9 +46,9 @@ class ReflectionResult(BaseModel):
 class ReflectionInput(BaseModel):
     """Input for the reflection tool."""
 
-    response: str = Field(..., description="The original model response to reflect upon and improve")
+    response: str = Field(..., min_length=1, description="The original model response to reflect upon and improve")
     query: str | None = None
-    focus_dimensions: Sequence[EvaluationDimension] = Field(
-        default_factory=list, description="Specific dimensions to focus on during evaluation"
+    focus_dimensions: Sequence[EvaluationDimension] | None = Field(
+        None, description="Specific dimensions to focus on during evaluation"
     )
     improvement_prompt: str | None = None
