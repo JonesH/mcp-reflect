@@ -64,12 +64,12 @@ no_implicit_optional = true
 strict_optional = true
 
 [tool.ruff]
-select = ["E", "F", "B", "I", "N", "ANN", "W", "D", "UP", "C90"]
+lint.select = ["E", "F", "B", "I", "N", "ANN", "W", "D", "UP", "C90"]
 ignore = ["ANN101", "D203", "D213"]
 line-length = 120
 target-version = "py311"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "ANN"]
 
 [tool.pytest.ini_options]
