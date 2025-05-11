@@ -5,6 +5,7 @@ and generating improved versions with detailed feedback.
 """
 
 import asyncio
+import re
 from collections.abc import Sequence
 
 from pydantic import BaseModel
@@ -15,7 +16,6 @@ from mcp_reflect.models import (
     ReflectionInput,
     ReflectionResult,
 )
-import re
 
 
 class EvaluationPrompt(BaseModel):

@@ -115,7 +115,8 @@ class TestSequentialReflectTool:
 
         # Call function
         results = await sequential_reflect(
-            responses=["Original", "Ignored"], mode="iterative"  # Second response ignored in iterative mode
+            responses=["Original", "Ignored"],
+            mode="iterative",  # Second response ignored in iterative mode
         )
 
         # Verify results

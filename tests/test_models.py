@@ -159,6 +159,7 @@ class TestReflectionInput:
 
         assert input_data.response == "Test response"
         assert input_data.query == "Test query"
+        assert input_data.focus_dimensions is not None
         assert list(input_data.focus_dimensions) == focus_dimensions
         assert input_data.improvement_prompt == "Make it better"
 

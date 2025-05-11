@@ -26,7 +26,7 @@ async def reflect(
     response: Annotated[str, Field(..., description="The original model response to reflect upon and improve")],
     query: Annotated[str | None, Field(None, description="The original query that prompted the response")] = None,
     focus_dimensions: Annotated[
-        Sequence[EvaluationDimension] | None,
+        list[EvaluationDimension] | None,
         Field(None, description="Specific dimensions to focus on during evaluation"),
     ] = None,
     improvement_prompt: Annotated[
@@ -57,7 +57,7 @@ async def reflect(
 @mcp.tool()
 async def sequential_reflect(
     responses: Annotated[
-        Sequence[str], Field(..., description="A sequence of model responses to analyze", min_items=1)
+        Sequence[str], Field(..., description="A sequence of model responses to analyze", min_length=1)
     ],
     mode: Annotated[
         Literal["independent", "iterative", "comparative"], Field(description="How to process multiple responses")
@@ -89,7 +89,7 @@ async def sequential_reflect(
         # Each reflection builds on previous improvements
         current = responses[0]
         for i, _ in enumerate(responses):
-            input_data = ReflectionInput(response=current, improvement_prompt=f"Iteration {i+1}/{len(responses)}")
+            input_data = ReflectionInput(response=current, improvement_prompt=f"Iteration {i + 1}/{len(responses)}")
             result = await evaluate_response(input_data)
             results.append(result)
             current = result.improved_response

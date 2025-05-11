@@ -4,7 +4,7 @@ lint:
 	poetry run ruff check .
 
 fix:
-	poetry run ruff --fix --unsafe-fixes .
+	poetry run ruff format .
 
 format:
 	poetry run black .
