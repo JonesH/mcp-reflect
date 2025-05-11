@@ -65,7 +65,7 @@ strict_optional = true
 
 [tool.ruff]
 lint.select = ["E", "F", "B", "I", "N", "ANN", "W", "D", "UP", "C90"]
-ignore = ["ANN101", "D203", "D213"]
+lint.ignore = ["ANN101", "D203", "D213"]
 line-length = 120
 target-version = "py311"
 
