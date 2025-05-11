@@ -25,7 +25,7 @@ packages = [{ include = "mcp_reflect" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
-fastmcp = ">=0.3.0"
+fastmcp = "2.3.3"
 pydantic = ">=2.0.0"
 async-lru = "^2.0.4"
 uvicorn = {version = ">=0.23.0", optional = true}

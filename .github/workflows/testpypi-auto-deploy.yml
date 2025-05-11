@@ -1,0 +1,75 @@
+name: TestPyPI Auto Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mcp_reflect/**'
+      - 'pyproject.toml'
+  workflow_dispatch:
+    inputs:
+      version_suffix:
+        description: 'Optional version suffix (default: timestamp)'
+        required: false
+        type: string
+
+jobs:
+  deploy-to-testpypi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+      
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      
+      - name: Install dependencies
+        run: poetry install --no-interaction
+      
+      - name: Run tests
+        run: poetry run pytest
+      
+      - name: Generate dev version with timestamp
+        if: ${{ github.event.inputs.version_suffix == '' }}
+        run: |
+          CURRENT_VERSION=$(poetry version -s)
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          DEV_VERSION="${CURRENT_VERSION}.dev${TIMESTAMP}"
+          poetry version $DEV_VERSION
+          echo "New version: $DEV_VERSION"
+      
+      - name: Set custom dev version
+        if: ${{ github.event.inputs.version_suffix != '' }}
+        run: |
+          CURRENT_VERSION=$(poetry version -s)
+          CUSTOM_VERSION="${CURRENT_VERSION}.dev${{ github.event.inputs.version_suffix }}"
+          poetry version $CUSTOM_VERSION
+          echo "New version: $CUSTOM_VERSION"
+      
+      - name: Build package
+        run: poetry build
+      
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+      
+      - name: Output install command
+        run: |
+          PACKAGE_VERSION=$(poetry version -s)
+          echo "::notice::Package published to TestPyPI. Install with: pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ mcp-reflect==${PACKAGE_VERSION}"

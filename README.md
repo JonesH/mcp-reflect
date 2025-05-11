@@ -34,13 +34,22 @@ MCP-Reflect evaluates model responses across these key dimensions:
 ### Using pip
 
 ```bash
+# Install from PyPI (stable releases)
 pip install mcp-reflect
+
+# Install latest development version from TestPyPI
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ mcp-reflect
 ```
 
 ### Using Poetry
 
 ```bash
+# Install from PyPI (stable releases)
 poetry add mcp-reflect
+
+# Install from TestPyPI (development versions)
+poetry source add --priority=supplemental test-pypi https://test.pypi.org/simple/
+poetry add --source test-pypi mcp-reflect
 ```
 
 ### Using UV
