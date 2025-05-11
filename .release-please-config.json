@@ -1,0 +1,20 @@
+{
+  "bootstrap-sha": "31dd868df45f660944b1dd3882874a74ea2699cc",
+  "packages": {
+    ".": {
+      "release-type": "python",
+      "package-name": "mcp-reflect",
+      "include-v-in-tag": true,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "versioning": "python",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "pyproject.toml",
+          "jsonpath": "$.tool.poetry.version"
+        }
+      ]
+    }
+  }
+}
