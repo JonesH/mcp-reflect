@@ -23,10 +23,34 @@ mcp: FastMCP = FastMCP(
 
 @mcp.tool()
 async def reflect(
-    response: Annotated[str, Field(..., description="The original model response to reflect upon and improve")],
-    query: Annotated[str | None, Field(None, description="The original query that prompted the response")] = None,
-    focus_dimensions: Annotated[Sequence[EvaluationDimension] | None, Field(None, description="Specific dimensions to focus on during evaluation")] = None,
-    improvement_prompt: Annotated[str | None, Field(None, description="Additional context or specific instructions for improvement")] = None,
+    response: Annotated[
+        str,
+        Field(
+            ...,
+            description="The original model response to reflect upon and improve"
+        )
+    ],
+    query: Annotated[
+        str | None,
+        Field(
+            None,
+            description="The original query that prompted the response"
+        )
+    ] = None,
+    focus_dimensions: Annotated[
+        Sequence[EvaluationDimension] | None,
+        Field(
+            None,
+            description="Specific dimensions to focus on during evaluation"
+        )
+    ] = None,
+    improvement_prompt: Annotated[
+        str | None,
+        Field(
+            None,
+            description="Additional context or specific instructions for improvement"
+        )
+    ] = None,
 ) -> ReflectionResult:
     """Reflect on and improve a model's response with structured evaluation.
 
@@ -92,7 +116,8 @@ async def sequential_reflect(
         for i, response in enumerate(responses):
             [r for j, r in enumerate(responses) if j != i]
             input_data = ReflectionInput(
-                response=response, improvement_prompt="Compare with other responses for improvement"
+                response=response,
+                improvement_prompt="Compare with other responses for improvement"
             )
             result = await evaluate_response(input_data)
             results.append(result)
